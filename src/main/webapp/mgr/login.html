@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>登陆</title>
+<link href="dwz_jui-1.5.2/themes/css/login.css" rel="stylesheet" type="text/css" media="screen"/>
+<!--[if lt IE 9]><script src="mgr/dwz_jui-1.5.2/js/speedup.js" type="text/javascript"></script><script src="dwz_jui-1.5.2/js/jquery-1.11.3.min.js" type="text/javascript"></script><![endif]-->
+<!--[if gte IE 9]><!-->
+<script src="dwz_jui-1.5.2/js/jquery-2.1.4.min.js" type="text/javascript"></script>
+<script src="js/md5.js" type="text/javascript"></script>
+<!--<![endif]-->
+<script>
+
+$(function(){
+	$('#login_btn').click(function(e){
+		var acc = $('#acc').val();
+		if(acc == ''){
+			alert('账号不能为空！');
+			return;
+		}
+		var auth = $('#auth').val();
+		if(acc == ''){
+			alert('密码不能为空！');
+			return;
+		}
+		auth = hex_md5(auth);
+		$.ajax({
+			type : 'GET',
+			url : '../admin/login',
+			dataType : 'json',
+			async: false,
+			data : {
+				acc : acc,
+				auth : auth
+			},
+			success : function(data){
+				if(data.r != 0){
+					alert(data.msg);
+					//alert('账号或密码错误，请重新登陆！');
+					return;
+				}
+				window.location.href = '../admin/index_html';
+			}
+		});
+		e.preventDefault();
+	});
+	
+});
+
+</script>
+</head>
+
+<body>
+	<form action="index.html">
+		<p>
+			<label>用户：</label> <input type="text" name="username" size="20"
+				class="login_input" id="acc" />
+		</p>
+		<p>
+			<label>密码：</label> <input type="password" name="password" size="20"
+				class="login_input" id="auth" />
+		</p>
+		<div class="login_bar">
+			<input class="sub" type="button" value="登陆" id="login_btn" />
+		</div>
+	</form>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.df.support.mapper.IAdminMapper">
+	<resultMap type="com.df.support.pojo.Admin" id="adminResultMap">
+		<id column="id" property="id"/>
+		<result column="account" property="account"/>
+		<result column="name" property="name"/>
+		<result column="auth" property="auth"/>
+		<result column="permission" property="permission"/>
+		<result column="creator_id" property="creatorId"/>
+		<result column="status" property="status"/>
+		<result column="create_timestamp" property="createTimestamp"/>
+		<result column="modify_timestamp" property="modifyTimestamp"/>
+		
+	</resultMap>
+	<select id="getAllAdmins" resultMap="adminResultMap" parameterType="com.df.support.param.AdminParam">
+		SELECT a.*
+		 FROM admin a LEFT OUTER JOIN admin p ON a.creator_id = p.id
+		 <trim prefix="WHERE" prefixOverrides= "AND|OR">
+             <if test="account != null and account != '' " >
+                  AND a.account LIKE  '%${account}%'
+             </if>
+		</trim>
+		ORDER BY a.account ASC
+		<if test="start > 0">
+			OFFSET
+				#{start}
+		</if>
+		<if test="limit > 0">
+			LIMIT
+				#{limit}
+		</if>
+	</select>
+	<select id="getRowNumber" resultType="int" parameterType="com.df.support.param.AdminParam">
+		SELECT COUNT(*) FROM admin a 
+		 <trim prefix="WHERE" prefixOverrides= "AND|OR">
+             <if test="account != null and account != '' " >
+                  AND a.account LIKE  '%${account}%'
+             </if>
+		</trim>
+	</select>
+	<select id="getAdminById" resultMap="adminResultMap">
+		SELECT * FROM admin WHERE id=#{id}
+	</select>
+	<select id="getAdminByAccount" resultMap="adminResultMap">
+		SELECT * FROM admin WHERE account=#{id}
+	</select>
+	<insert id="addAdmin">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			SELECT nextval('admin_id_seq')
+		</selectKey>
+		INSERT INTO admin
+			(id,account,name,auth,permission,creator_id,status,create_timestamp,modify_timestamp)
+		VALUES
+			(#{id},#{account},#{name},#{auth},#{permission},#{creatorId},#{status},
+			#{createTimestamp},#{modifyTimestamp})
+	</insert>
+	
+	<update id="updateAdmin">
+		UPDATE admin SET
+			account=#{account},
+			name=#{name},
+			auth=#{auth},
+			permission=#{permission},
+			creator_id=#{creatorId},
+			status=#{status},
+			create_timestamp=#{createTimestamp},
+			modify_timestamp=#{modifyTimestamp}
+		WHERE
+			id=#{id}
+	</update>
+	
+	<delete id="deleteAdmin">
+		DELETE FROM admin WHERE id=#{id}
+	</delete>
+</mapper>
